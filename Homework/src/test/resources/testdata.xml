@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxbData xmlns:ns2="com.ca.msm.weipe03.homework.data.JaxbData">
+    <schoolclass>
+        <className>test_class_name</className>
+        <numberOfStudents>20</numberOfStudents>
+    </schoolclass>
+    <buslist>
+        <bus>
+            <name>test_bus_a</name>
+            <capacity>11</capacity>
+        </bus>
+        <bus>
+            <name>test_bus_b</name>
+            <capacity>22</capacity>
+        </bus>
+        <bus>
+            <name>test_bus_c</name>
+            <capacity>33</capacity>
+        </bus>
+        <bus>
+            <name>test_bus_d</name>
+            <capacity>44</capacity>
+        </bus>
+    </buslist>
+</jaxbData>

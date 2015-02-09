@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxbData xmlns:ns2="com.ca.msm.weipe03.homework.data.JaxbData">
+    <buslist>
+        <bus>
+            <capacity>49</capacity>
+            <name>Renault</name>
+        </bus>
+        <bus>
+            <capacity>66</capacity>
+            <name>Scania</name>
+        </bus>
+        <bus>
+            <capacity>48</capacity>
+            <name>Man</name>
+        </bus>
+        <bus>
+            <capacity>10</capacity>
+            <name>Transporter</name>
+        </bus>
+        <bus>
+            <capacity>14</capacity>
+            <name>MiniBus</name>
+        </bus>
+        <bus>
+            <capacity>75</capacity>
+            <name>Karosa</name>
+        </bus>
+    </buslist>
+    <schoolclass>
+        <numberOfStudents>74</numberOfStudents>
+        <className>Kvarta B</className>
+    </schoolclass>
+</jaxbData>
