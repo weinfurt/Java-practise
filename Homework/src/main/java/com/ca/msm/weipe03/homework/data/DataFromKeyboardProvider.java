@@ -15,7 +15,7 @@ public class DataFromKeyboardProvider implements IDataProvider{
 		// TODO Auto-generated constructor stub
 	}
 	
-	private String readStringFromKeyboard(String prompt) {
+	protected String readStringFromKeyboard(String prompt) {
 		String input = "";
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		System.out.print(prompt);
@@ -28,7 +28,7 @@ public class DataFromKeyboardProvider implements IDataProvider{
 		return input;
 	}
 	
-	private int readIntFromKeyboard(String prompt) {
+	protected int readIntFromKeyboard(String prompt) {
 		int number = 0;
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		System.out.print(prompt);
@@ -46,7 +46,7 @@ public class DataFromKeyboardProvider implements IDataProvider{
 	}
 	
 	@Override
-	public List<Bus> provideBuses() throws CloneNotSupportedException{
+	public List<Bus> provideBuses(){
 		List<Bus> list = new ArrayList<Bus>();
 
 		int busesCount = readIntFromKeyboard("Enter the number of available buses >");
@@ -59,7 +59,7 @@ public class DataFromKeyboardProvider implements IDataProvider{
 		return list;		
 	}
 	@Override
-	public SchoolClass provideSchoolClass() throws CloneNotSupportedException{
+	public SchoolClass provideSchoolClass(){
 		String className = readStringFromKeyboard("Enter the class name >");
 		int studentsCount = readIntFromKeyboard("Enter the number of students in class >");
 		return new SchoolClass.Builder(studentsCount).withName(className).build();	

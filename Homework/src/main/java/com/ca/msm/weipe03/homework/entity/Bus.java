@@ -3,6 +3,9 @@ package com.ca.msm.weipe03.homework.entity;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This is a 'bus' entity. Immutable version.
  * 
@@ -12,6 +15,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(namespace = "com.ca.msm.weipe03.homework.data.JaxbData")
 public class Bus implements Cloneable{
+	private static final Logger logger = LoggerFactory.getLogger(Bus.class);
+
 	@XmlElement
 	private int capacity; // required
 	@XmlElement
@@ -122,27 +127,33 @@ public class Bus implements Cloneable{
 			return this;
 		}
 		
-		public boolean isValid(){
-			if (object.capacity >= MIN_CAPACITY && object.capacity <= MAX_CAPACITY)
+		public boolean validate(){
+			logger.trace("validate()");
+			if (object.capacity >= MIN_CAPACITY && object.capacity <= MAX_CAPACITY){
+				logger.trace("The field 'capacity' is within the allowed range.");
 				return true;
-			else
-				return false;				
+			} else {
+				logger.error("The value "+object.capacity+" of the field 'capacity' is out of allowed range <"+MIN_CAPACITY+","+MAX_CAPACITY+">.");
+				return false;
+			}
 		}
 		
-		public void validate(){
-			if (!isValid())
-				throw new IllegalStateException("Object fields are out of allowed range.");			
-		}
 		/**
 		 * Build the Bus object
 		 * 
 		 * @return
 		 * @throws CloneNotSupportedException 
 		 */
-		public Bus build() throws CloneNotSupportedException{
-			validate();
-			return (Bus) object.clone();
+		public Bus build() {
+			if (validate()) {
+				try {
+					return (Bus) object.clone();
+				} catch (CloneNotSupportedException e) {
+					logger.error("The object of the class "+object.getClass()+" does not support clone().", e);
+				}
+			}
+			return null;
 		}
-		
+
 	}
 }

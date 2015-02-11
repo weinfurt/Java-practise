@@ -2,33 +2,50 @@ package com.ca.msm.weipe03.homework.data;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import org.junit.Test;
 
 public class DataProviderFactoryTest{
 	public static IDataProvider provider;
 	@Test
-	public void get_data_provider() throws IOException {
-		provider = DataProviderFactory.getDataProvider(new String[]{"-code"});		
+	public void get_data_provider() throws DataReadException {
+		provider = DataProviderFactory.getDataProvider(new String[]{"-CODE"});		
 		assertNotNull(provider);
-		assertTrue(provider instanceof DataHardcodedProvider);
 		assertEquals(DataHardcodedProvider.class, provider.getClass());
 		
-		provider = DataProviderFactory.getDataProvider(new String[]{"-keyboard"});
+		provider = DataProviderFactory.getDataProvider(new String[]{"-KEYBOARD"});
 		assertNotNull(provider);
-		assertTrue(provider instanceof DataFromKeyboardProvider);
-		assertEquals(DataHardcodedProvider.class, provider.getClass());
+		assertEquals(DataFromKeyboardProvider.class, provider.getClass());
 
-		provider = DataProviderFactory.getDataProvider(new String[]{"-file", "c:\\somefile.txt"});
+		provider = DataProviderFactory.getDataProvider(new String[]{"-FILE", "testdata.txt"});
 		assertNotNull(provider);
-		assertTrue(provider instanceof DataFromFileProvider);
+		assertEquals(DataFromFileProvider.class, provider.getClass());
 
-		provider = DataProviderFactory.getDataProvider(new String[]{"-blablabla"});
+		provider = DataProviderFactory.getDataProvider(new String[]{"-FILE", "testdata.xml"});
+		assertNotNull(provider);
+		assertEquals(DataFromJaxbProvider.class, provider.getClass());
+
+		provider = DataProviderFactory.getDataProvider(new String[]{"-FILE"});
+		assertNull(provider);
+
+		provider = DataProviderFactory.getDataProvider(new String[]{"-INVALID_ARG"});
 		assertNull(provider);
 
 		provider = DataProviderFactory.getDataProvider(null);
 		assertNull(provider);
-
+	}
+	
+	@Test(expected=DataReadException.class)
+	public void get_invalid_data_file_provider() throws DataReadException{
+		provider = DataProviderFactory.getDataProvider(new String[]{"-FILE", "nonexistent.txt"});
+		assertNotNull(provider);
+		assertEquals(DataFromFileProvider.class, provider.getClass());	
+	}
+	
+	@Test(expected=DataReadException.class)
+	public void get_invalid_xml_file_provider() throws DataReadException{
+		provider = DataProviderFactory.getDataProvider(new String[]{"-FILE", "nonexistent.xml"});
+		assertNotNull(provider);
+		assertEquals(DataFromJaxbProvider.class, provider.getClass());		
 	}
 
 }

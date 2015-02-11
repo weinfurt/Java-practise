@@ -1,7 +1,6 @@
 package com.ca.msm.weipe03.homework.service;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;

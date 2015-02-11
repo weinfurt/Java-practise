@@ -13,7 +13,7 @@ public class DataHardcodedProvider implements IDataProvider{
 	}
 	
 	@Override
-	public List<Bus> provideBuses() throws CloneNotSupportedException{
+	public List<Bus> provideBuses(){
 		List<Bus> list = new ArrayList<Bus>();
 		list.add(new Bus.Builder(49).withName("Renault").build());
 		list.add(new Bus.Builder(66).withName("Scania").build());
@@ -25,7 +25,7 @@ public class DataHardcodedProvider implements IDataProvider{
 	}
 	
 	@Override
-	public SchoolClass provideSchoolClass() throws CloneNotSupportedException{
+	public SchoolClass provideSchoolClass(){
 		return new SchoolClass.Builder(74).withName("Kvarta B").build();		
 	}
 

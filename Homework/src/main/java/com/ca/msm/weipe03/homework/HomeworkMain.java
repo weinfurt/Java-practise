@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ca.msm.weipe03.homework.data.DataProviderFactory;
+import com.ca.msm.weipe03.homework.data.DataReadException;
 import com.ca.msm.weipe03.homework.data.IDataProvider;
 import com.ca.msm.weipe03.homework.data.JaxbData;
 import com.ca.msm.weipe03.homework.entity.Bus;
@@ -31,7 +32,7 @@ public class HomeworkMain {
 	public HomeworkMain(){
 		trip = new SchoolTrip();
 	}
-	
+/*	
 	private void saveToJaxbXML(IDataProvider provider) throws CloneNotSupportedException{
 		JaxbData object = new JaxbData();
 		object.setBuses(provider.provideBuses());
@@ -47,18 +48,27 @@ public class HomeworkMain {
 			e.printStackTrace();
 		} 		
 	}
-	public void run(String args[]) throws IOException, CloneNotSupportedException{
+*/
+	public void run(String args[]){
 		logger.trace("Input arguments: {}", Arrays.toString(args));
-		IDataProvider dataProvider = DataProviderFactory.getDataProvider(args);
+		IDataProvider dataProvider = null;
+		try {
+			dataProvider = DataProviderFactory.getDataProvider(args);
+		} catch (DataReadException e1) {
+			logger.error("Cannot create data provider with following arguments: {}", Arrays.toString(args), e1);
+		}
 		if (dataProvider != null) {
-			saveToJaxbXML(dataProvider);
-			displayResults(dataProvider.provideSchoolClass(), dataProvider.provideBuses());
+//			saveToJaxbXML(dataProvider);
+			try {
+				displayResults(dataProvider.provideSchoolClass(), dataProvider.provideBuses());
+			} catch (DataReadException e) {
+				logger.error("Error in data provider occured.", e);
+			}
 		} else
 			logger.error("Invalid input arguments");
 	}
 	
-	public void displayResults(SchoolClass schoolClass, List<Bus> buses){
-		
+	public void displayResults(SchoolClass schoolClass, List<Bus> buses){	
 		logger.info("**** Planning school trip of \"{}\" with {} students ****", schoolClass.getClassName(), schoolClass.getStudentsCount());
 		SchoolTripResult result = trip.tripResult(schoolClass, buses);
 		if (result.hasEnoughCapacity())
@@ -71,7 +81,7 @@ public class HomeworkMain {
 		}
 	}
 	
-	public static void main(String args[]) throws IOException, CloneNotSupportedException{
+	public static void main(String args[]){
 		new HomeworkMain().run(args);
 	}
 }

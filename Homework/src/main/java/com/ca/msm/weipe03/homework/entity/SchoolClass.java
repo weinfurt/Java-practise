@@ -3,6 +3,9 @@ package com.ca.msm.weipe03.homework.entity;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This is a 'school class' entity. Immutable version.
  * 
@@ -11,6 +14,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(namespace = "com.ca.msm.weipe03.homework.data.JaxbData")
 public class SchoolClass implements Cloneable{
+	private static final Logger logger = LoggerFactory.getLogger(SchoolClass.class);
+
 	@XmlElement
 	private int numberOfStudents; // required
 	@XmlElement
@@ -78,21 +83,26 @@ public class SchoolClass implements Cloneable{
 			return this;
 		}
 		
-		public boolean isValid(){
-			if (object.numberOfStudents >= MIN_STUDENTS && object.numberOfStudents <= MAX_STUDENTS)
+		public boolean validate(){
+			logger.trace("validate()");
+			if (object.numberOfStudents >= MIN_STUDENTS && object.numberOfStudents <= MAX_STUDENTS){
+				logger.trace("The field 'numberOfStudents' is within the allowed range.");
 				return true;
-			else
-				return false;							
+			} else {
+				logger.error("The value "+object.numberOfStudents+" of the field 'numberOfStudents' is out of allowed range <"+MIN_STUDENTS+","+MAX_STUDENTS+">.");
+				return false;
+			}
 		}
 		
-		private void validate(){
-			if (!isValid())
-				throw new IllegalStateException("Object fields are out of allowed range.");			
-		}
-		
-		public SchoolClass build() throws CloneNotSupportedException{
-			validate();
-			return (SchoolClass) object.clone();
+		public SchoolClass build(){
+			if (validate()) {
+				try {
+					return (SchoolClass) object.clone();
+				} catch (CloneNotSupportedException e) {
+					logger.error("The object of the class "+object.getClass()+" does not support clone().", e);
+				}
+			}
+			return null;
 		}
 	}
 }

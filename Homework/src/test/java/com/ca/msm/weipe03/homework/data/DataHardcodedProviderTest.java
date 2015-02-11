@@ -49,7 +49,7 @@ public class DataHardcodedProviderTest {
 	
 	@Test
 	public void provide_school_class() throws CloneNotSupportedException{
-		SchoolClass expectedClass = new SchoolClass.Builder(174).withName("Kvarta B").build();
+		SchoolClass expectedClass = new SchoolClass.Builder(74).withName("Kvarta B").build();
 		
 		SchoolClass result = provider.provideSchoolClass();
 		

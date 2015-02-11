@@ -1,6 +1,5 @@
 package com.ca.msm.weipe03.homework.data;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
@@ -13,30 +12,36 @@ public class DataProviderFactory {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static IDataProvider getDataProvider(String arguments[]) throws IOException {
+	public static IDataProvider getDataProvider(String arguments[]) throws DataReadException{
 		logger.debug("getDataProvider()");
 		if (arguments == null){
-			logger.warn("No parameters has been passed in.");
+			logger.error("No parameters has been passed in.");
 			return null;
 		}
 		logger.trace("input: arguments={}", Arrays.toString(arguments));
 		if (arguments.length > 0) {
-			switch (arguments[0]) {
+			switch (arguments[0].toLowerCase()) {
 			case "-keyboard":
+				logger.trace("Selecting DataFromKeyboardProvider.");
 				return new DataFromKeyboardProvider();
 			case "-code":
+				logger.trace("Selecting DataHardcodedProvider");
 				return new DataHardcodedProvider();
 			case "-file":
 				if (arguments.length > 1)
-					return new DataFromFileProvider(arguments[1]);
-				else
+					if (arguments[1].endsWith(".xml") || (arguments[1].endsWith(".XML"))){
+						logger.trace("Selecting DataFromJaxbProvider");
+						return new DataFromJaxbProvider(arguments[1]);
+					} else {
+						logger.trace("Selecting DataFromFileProvider");
+						return new DataFromFileProvider(arguments[1]);								
+					}
+				else {
+					logger.error("Required argument after '-file' argument not found.");
 					return null;
-			case "-jaxb":
-				if (arguments.length > 1)
-					return new DataFromJaxbProvider(arguments[1]);
-				else
-					return null;
+				}
 			default:
+				logger.error("Argument '{}' not recognized as valid argument.", arguments[0]);
 				return null;
 			}
 		}

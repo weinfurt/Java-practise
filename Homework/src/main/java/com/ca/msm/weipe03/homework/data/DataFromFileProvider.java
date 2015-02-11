@@ -1,10 +1,11 @@
 package com.ca.msm.weipe03.homework.data;
 
-import java.io.InputStream;
-import java.nio.file.Path;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,39 +15,58 @@ import com.ca.msm.weipe03.homework.entity.SchoolClass;
 public class DataFromFileProvider implements IDataProvider {
 	private static final Logger logger = LoggerFactory.getLogger(IDataProvider.class);
 
-	private static Path filePath;
+	private String filePath;
 	private static final String PREFIX_CLASS = "class:";
 	private static final String PREFIX_BUSES = "buses:";
-	private static List<String> lines = new ArrayList<String>();
 
-	public DataFromFileProvider(String inputFile) {
-		logger.debug("DataFromFileProvider()");
+	public DataFromFileProvider(String inputFile) throws DataReadException{
+		logger.trace("DataFromFileProvider()");
 		logger.trace("input: inputFile={}", inputFile);
 		if(inputFile == null) {
+			logger.error("Parameter 'inputFile' cannot be null");
 			throw new IllegalArgumentException("Parameter 'inputFile' cannot be null");
 		}
-		InputStream stream = getClass().getResourceAsStream("/"+inputFile);
-		if (stream == null){
-			throw new IllegalStateException("Unable to create stream from file.");
+		try {
+			filePath = getClass().getResource("/" + inputFile).getFile();
+		} catch (NullPointerException e) {
+			logger.error("Cannot locate the '{}' input file in resources.", inputFile);
+			throw new DataReadException("Cannot locate the "+inputFile+" input file in resources.");
 		}
-		Scanner scan = new Scanner(stream);
+		if (filePath.startsWith("/"))
+			filePath = filePath.substring(1);
+		logger.trace("Full path to input file: {}", filePath);
+	}
+
+	private List<String> parseFileToLines() throws DataReadException{
+		logger.trace("parseFileToLines()");
+		List<String> lines = new ArrayList<String>();
+		Scanner scan;
+		try {
+			scan = new Scanner(new File(filePath));
+		} catch (FileNotFoundException e) {
+			logger.error("Cannot find the inout file '{}'.", filePath, e);
+			throw new DataReadException("Cannot find the input file '" + filePath + "'.", e);
+		}
 		while (scan.hasNextLine()){
 			lines.add(scan.nextLine());
 		}
 		scan.close();
 		logger.trace("File content: {}", lines.toString());
+		if (lines.isEmpty()){
+			logger.error("The input file '{}' contains no data.", filePath);
+			throw new DataReadException("The input file '"+filePath+"' contains no data.");
+		}			
+		return lines;
 	}
-	
+		
 	@Override
-	public List<Bus> provideBuses() throws CloneNotSupportedException {
-		logger.debug("provideBuses()");
+	public List<Bus> provideBuses() throws DataReadException{
+		logger.trace("provideBuses()");
+		List<String> lines = parseFileToLines();
+		
 		String busName = "";
 		int seats = 0;
 		List<Bus> buses = new ArrayList<Bus>();
-		if (lines == null){
-			logger.warn("The input file does not contain any lines.");
-			return buses;
-		}	
 		for (String line : lines){
 			if (line.startsWith(PREFIX_BUSES)) {
 				String[] token = line.split("\\s");
@@ -74,31 +94,38 @@ public class DataFromFileProvider implements IDataProvider {
 	}
 
 	@Override
-	public SchoolClass provideSchoolClass() throws CloneNotSupportedException {
-		logger.debug("provideSchoolClass()");
+	public SchoolClass provideSchoolClass() throws DataReadException {
+		logger.trace("provideSchoolClass()");
+		List<String> lines = parseFileToLines();
+
 		String className = "";
 		int studentsCount = 0;
-		if (lines != null) {
-			for (String line : lines) {
-				if (line.startsWith(PREFIX_CLASS)) {
-					String[] token = line.split("\\s");
-					if (token.length >= 3) {
-						className = token[1];
-						try {
-							studentsCount = Integer.parseInt(token[2]);
-						} catch (NumberFormatException e) {
-							logger.error("\"{}\" is not an integer number.", token[2]);
-						}
-						logger.trace("New record parsed: className={}, students={}", className, studentsCount);
+		for (String line : lines) {
+			if (line.startsWith(PREFIX_CLASS)) {
+				String[] token = line.split("\\s");
+				if (token.length >= 3) {
+					className = token[1];
+					try {
+						studentsCount = Integer.parseInt(token[2]);
+					} catch (NumberFormatException e) {
+						logger.error(
+								"The string \"{}\" does not represent an integer value.",
+								token[2]);
+						throw new DataReadException("The string \"" + token[2]
+								+ "\" does not represent an integer value.", e);
 					}
+					logger.trace(
+							"New record parsed: className={}, students={}",
+							className, studentsCount);
 				}
 			}
-			if (className.equals("") && studentsCount == 0) {
-				logger.warn("There is no record of a school class in data file \"{}\".", filePath);
-			}
-		} else {
-			logger.warn("The input file does not contain any lines.");
 		}
-		return new SchoolClass.Builder(studentsCount).withName(className).build();
+		if (className.equals("") && studentsCount == 0) {
+			logger.warn(
+					"There is no record of a school class in data file \"{}\".",
+					filePath);
+		}
+		return new SchoolClass.Builder(studentsCount).withName(className)
+				.build();
 	}
 }

@@ -16,7 +16,7 @@ public class DataFromJaxbProviderTest {
 	public static DataFromJaxbProvider provider;
 
 	@BeforeClass
-	public static void setup(){
+	public static void setup() throws DataReadException{
 		provider = new DataFromJaxbProvider("testdata.xml");
 	}
 	
@@ -26,14 +26,14 @@ public class DataFromJaxbProviderTest {
 	}
 	
 	@Test
-	public void constructor_DataFromJaxbProvider() {
+	public void constructor_DataFromJaxbProvider() throws DataReadException {
 		provider = new DataFromJaxbProvider("testdata.xml");
 		
 		assertNotNull(provider);
 	}
 	
 	@Test
-	public void provide_buses() throws CloneNotSupportedException{
+	public void provide_buses(){
 		List<Bus> expectedBuses = new ArrayList<Bus>();
 		expectedBuses.add(new Bus.Builder(11).withName("test_bus_a").build());
 		expectedBuses.add(new Bus.Builder(22).withName("test_bus_b").build());
@@ -47,7 +47,7 @@ public class DataFromJaxbProviderTest {
 	}
 
 	@Test
-	public void provide_school_class() throws CloneNotSupportedException{
+	public void provide_school_class(){
 		SchoolClass expectedClass = new SchoolClass.Builder(20).withName("test_class_name").build();
 		
 		SchoolClass result = provider.provideSchoolClass();

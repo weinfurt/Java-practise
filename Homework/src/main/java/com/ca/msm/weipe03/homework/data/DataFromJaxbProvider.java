@@ -17,35 +17,53 @@ import com.ca.msm.weipe03.homework.entity.SchoolClass;
 public class DataFromJaxbProvider implements IDataProvider{
 	private static final Logger logger = LoggerFactory.getLogger(IDataProvider.class);
 	
+	private String filePath;
 	private JaxbData jaxbDataObject;
 
-	public DataFromJaxbProvider(String inputFile) {
-		logger.debug("DataFromJaxbProvider()");
+	public DataFromJaxbProvider(String inputFile) throws DataReadException {
+		logger.trace("DataFromJaxbProvider()");
 		logger.trace("input: inputFile={}", inputFile);
 		if(inputFile == null) {
+			logger.error("Parameter 'inputFile' cannot be null");
 			throw new IllegalArgumentException("Parameter 'inputFile' cannot be null");
 		}
 		try {
+			filePath = getClass().getResource("/" + inputFile).getFile();
+		} catch (NullPointerException e) {
+			logger.error("Cannot locate the '{}' input file in resources.", inputFile);
+			throw new DataReadException("Cannot locate the "+inputFile+" input file in resources.");
+		}
+		if (filePath.startsWith("/"))
+			filePath = filePath.substring(1);
+		logger.trace("Full path to input file: {}", filePath);
+		unmarshalData();
+	}
+	
+	private void unmarshalData() throws DataReadException{
+		logger.trace("unmarshalData()");
+		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(JaxbData.class);
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			File XMLfile = new File(getClass().getResource("/" + inputFile).getFile());
-			jaxbDataObject = (JaxbData) jaxbUnmarshaller.unmarshal(XMLfile);
+			jaxbDataObject = (JaxbData) jaxbUnmarshaller.unmarshal(new File(filePath));
 		} catch (JAXBException e) {
-			logger.error("JAXB Error occured.", e);
+			logger.error("JAXB error occured.", e);
+			throw new DataReadException("JAXB error occured.", e);
 		} catch (NullPointerException e) {
-			logger.error("Unable to find the input file \"{}\".", inputFile, e);
+			logger.error("Cannot find the inout file '{}'.", filePath, e);
+			throw new DataReadException("Cannot find the input file '" + filePath + "'.", e);
+			
 		}
 
 	}
 
 	@Override
-	public List<Bus> provideBuses() throws CloneNotSupportedException {
+	public List<Bus> provideBuses(){
 		List<Bus> buses = new ArrayList<Bus>(jaxbDataObject.getBuses());
 		return buses;
 	}
 
 	@Override
-	public SchoolClass provideSchoolClass() throws CloneNotSupportedException {
+	public SchoolClass provideSchoolClass(){
 		SchoolClass schoolClass = new SchoolClass(jaxbDataObject.getSchoolClass());
 		return schoolClass;
 	}
