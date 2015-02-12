@@ -16,7 +16,6 @@ public class JaxbData {
 	private List<Bus> buses;
 
 	public JaxbData() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	public SchoolClass getSchoolClass(){
