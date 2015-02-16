@@ -12,6 +12,11 @@ import org.slf4j.LoggerFactory;
 import com.ca.msm.weipe03.homework.entity.Bus;
 import com.ca.msm.weipe03.homework.entity.SchoolClass;
 
+/**
+ * Data provider which reads plain text file with defined format of lines.
+ * @author weipe03
+ *
+ */
 public class DataFromFileProvider implements IDataProvider {
 	private static final Logger logger = LoggerFactory.getLogger(IDataProvider.class);
 
@@ -19,6 +24,11 @@ public class DataFromFileProvider implements IDataProvider {
 	private static final String PREFIX_CLASS = "class:";
 	private static final String PREFIX_BUSES = "buses:";
 
+	/**
+	 * Constructor
+	 * @param inputFile - name of the file located in resources
+	 * @throws DataReadException
+	 */
 	public DataFromFileProvider(String inputFile) throws DataReadException{
 		logger.trace("DataFromFileProvider()");
 		logger.trace("input: inputFile={}", inputFile);
@@ -37,6 +47,11 @@ public class DataFromFileProvider implements IDataProvider {
 		logger.trace("Full path to input file: {}", filePath);
 	}
 
+	/**
+	 * Parse the text file to the collection of separated lines
+	 * @return collection of String lines
+	 * @throws DataReadException
+	 */
 	private List<String> parseFileToLines() throws DataReadException{
 		logger.trace("parseFileToLines()");
 		List<String> lines = new ArrayList<String>();
@@ -59,6 +74,9 @@ public class DataFromFileProvider implements IDataProvider {
 		return lines;
 	}
 		
+	/* (non-Javadoc)
+	 * @see com.ca.msm.weipe03.homework.data.IDataProvider#provideBuses()
+	 */
 	@Override
 	public List<Bus> provideBuses() throws DataReadException{
 		logger.trace("provideBuses()");
@@ -93,6 +111,9 @@ public class DataFromFileProvider implements IDataProvider {
 		return buses;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.ca.msm.weipe03.homework.data.IDataProvider#provideSchoolClass()
+	 */
 	@Override
 	public SchoolClass provideSchoolClass() throws DataReadException {
 		logger.trace("provideSchoolClass()");

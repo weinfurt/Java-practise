@@ -14,12 +14,22 @@ import org.slf4j.LoggerFactory;
 import com.ca.msm.weipe03.homework.entity.Bus;
 import com.ca.msm.weipe03.homework.entity.SchoolClass;
 
+/**
+ * Data provider which reads xml file.
+ * @author weipe03
+ *
+ */
 public class DataFromJaxbProvider implements IDataProvider{
 	private static final Logger logger = LoggerFactory.getLogger(IDataProvider.class);
 	
 	private String filePath;
 	private JaxbData jaxbDataObject;
 
+	/**
+	 * Constructor
+	 * @param inputFile
+	 * @throws DataReadException
+	 */
 	public DataFromJaxbProvider(String inputFile) throws DataReadException {
 		logger.trace("DataFromJaxbProvider()");
 		logger.trace("input: inputFile={}", inputFile);
@@ -39,6 +49,10 @@ public class DataFromJaxbProvider implements IDataProvider{
 		unmarshalData();
 	}
 	
+	/**
+	 * Method to unmarshal (decode) input file to the JaxbData object
+	 * @throws DataReadException
+	 */
 	private void unmarshalData() throws DataReadException{
 		logger.trace("unmarshalData()");
 		try {
@@ -56,12 +70,18 @@ public class DataFromJaxbProvider implements IDataProvider{
 
 	}
 
+	/* (non-Javadoc)
+	 * @see com.ca.msm.weipe03.homework.data.IDataProvider#provideBuses()
+	 */
 	@Override
 	public List<Bus> provideBuses(){
 		List<Bus> buses = new ArrayList<Bus>(jaxbDataObject.getBuses());
 		return buses;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.ca.msm.weipe03.homework.data.IDataProvider#provideSchoolClass()
+	 */
 	@Override
 	public SchoolClass provideSchoolClass(){
 		SchoolClass schoolClass = new SchoolClass(jaxbDataObject.getSchoolClass());
